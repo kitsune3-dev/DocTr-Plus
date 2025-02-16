@@ -49,12 +49,12 @@ def rec(opt):
     if not os.path.exists(opt.gsave_path):  # create save path
         os.mkdir(opt.gsave_path)
     
-    GeoTrP = GeoTrP().cuda()
+    model = GeoTrP().cuda()
     # reload geometric unwarping model
-    reload_model(GeoTrP.GeoTr, opt.GeoTr_path)
+    reload_model(model.GeoTr, opt.GeoTr_path)
     
     # To eval mode
-    GeoTrP.eval()
+    model.eval()
   
     for img_path in img_list:
         name = img_path.split('.')[-2]  # image name
@@ -68,7 +68,7 @@ def rec(opt):
         
         with torch.no_grad():
             # geometric unwarping
-            bm = GeoTrP(im.cuda())
+            bm = model(im.cuda())
             bm = bm.cpu()
             bm0 = cv2.resize(bm[0, 0].numpy(), (w, h))  # x flow
             bm1 = cv2.resize(bm[0, 1].numpy(), (w, h))  # y flow
